@@ -8,7 +8,19 @@ class Mapping() {
     fun add(fromStart: Long, toStart: Long, length: Long) {
         mappings.add(Entry(fromStart, toStart, length))
     }
+
+    fun find(from: Long): Long {
+        mappings.forEach{ entry ->
+            val index = from - entry.fromStart
+            if (index >= 0 && index < entry.length) {
+                return entry.toStart + index
+            }
+        }
+        return from
+    }
 }
+
+fun Long.translate(mapping: Mapping): Long = mapping.find(this)
 
 fun main() {
     val soilLines = File("soil.txt").readLines().iterator()
@@ -21,6 +33,16 @@ fun main() {
     val toTemperature = parseMapping(soilLines)
     val toHumidity = parseMapping(soilLines)
     val toLocation = parseMapping(soilLines)
+
+    seeds.associateBy { seed ->
+        seed.translate(toSoil)
+            .translate(toFertilizer)
+            .translate(toWater)
+            .translate(toLight)
+            .translate(toTemperature)
+            .translate(toHumidity)
+            .translate(toLocation).also(::println)
+    }.minBy(Map.Entry<Long, Long>::value).also(::println)
 }
 
 private fun parseSeeds(seedString: String) = "[^:]: (?<seed>.+)"
@@ -37,8 +59,8 @@ private fun parseMapping(lines: Iterator<String>): Mapping {
     while (nextLine.isNotEmpty()) {
         val params = nextLine.splitOnSpaces()
         mapping.add(
-            fromStart = params.elementAt(0).toLong(),
-            toStart = params.elementAt(1).toLong(),
+            fromStart = params.elementAt(1).toLong(),
+            toStart = params.elementAt(0).toLong(),
             length = params.elementAt(2).toLong(),
         )
         nextLine = if (lines.hasNext()) lines.next() else ""
