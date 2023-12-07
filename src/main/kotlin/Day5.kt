@@ -22,27 +22,34 @@ class Mapping() {
 
 fun Long.translate(mapping: Mapping): Long = mapping.find(this)
 
-fun main() {
-    val soilLines = File("soil.txt").readLines().iterator()
-    val seeds = parseSeeds(soilLines.next())
-    soilLines.next()
-    val toSoil = parseMapping(soilLines)
-    val toFertilizer = parseMapping(soilLines)
-    val toWater = parseMapping(soilLines)
-    val toLight = parseMapping(soilLines)
-    val toTemperature = parseMapping(soilLines)
-    val toHumidity = parseMapping(soilLines)
-    val toLocation = parseMapping(soilLines)
+class Day5 (fileName: String) {
+        private val soilLines = File(fileName).readLines().iterator()
+        private val seeds = parseSeeds(soilLines.next())
+        init{soilLines.next()}
+        private val toSoil = parseMapping(soilLines)
+        private val toFertilizer = parseMapping(soilLines)
+        private val toWater = parseMapping(soilLines)
+        private val toLight = parseMapping(soilLines)
+        private val toTemperature = parseMapping(soilLines)
+        private val toHumidity = parseMapping(soilLines)
+        private val toLocation = parseMapping(soilLines)
 
-    seeds.associateBy { seed ->
-        seed.translate(toSoil)
-            .translate(toFertilizer)
-            .translate(toWater)
-            .translate(toLight)
-            .translate(toTemperature)
-            .translate(toHumidity)
-            .translate(toLocation).also(::println)
-    }.minBy(Map.Entry<Long, Long>::value).also(::println)
+    fun part1() {
+        seeds.associateBy { seed ->
+            seed.translate(toSoil)
+                .translate(toFertilizer)
+                .translate(toWater)
+                .translate(toLight)
+                .translate(toTemperature)
+                .translate(toHumidity)
+                .translate(toLocation).also(::println)
+        }.minBy(Map.Entry<Long, Long>::value).also(::println)
+    }
+}
+
+fun main() {
+    val day5 = Day5("soil.txt")
+    day5.part1()
 }
 
 private fun parseSeeds(seedString: String) = "[^:]: (?<seed>.+)"
